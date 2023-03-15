@@ -53,9 +53,9 @@ app.delete("/posts/:id", checkAuth, PostController.remove)
 app.patch("/posts/:id",checkAuth, postCreateValidation, handleValidationErrors, PostController.update)
 
 
-app.listen("https://blog-t61f.onrender.com", (err) => {
-  if (err) {
-    return console.log(err);
-  }
-  console.log('Server Ok');
-});
+// app.listen("https://blog-t61f.onrender.com", (err) => {
+//   if (err) {
+//     return console.log(err);
+//   }
+//   console.log('Server Ok');
+// });
