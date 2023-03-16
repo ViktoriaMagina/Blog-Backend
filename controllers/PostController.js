@@ -29,7 +29,7 @@ export const create = async (req, res) => {
     const doc = new PostModel({
       title: req.body.title,
       text: req.body.text,
-      tags: req.body.tags.split(','),
+      tags: req.body.tags? req.body.tags.split(',') : [],
       user: req.userId,
     });
     const post = await doc.save();
