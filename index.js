@@ -51,11 +51,3 @@ app.get("/tags", PostController.getLastTags)
 app.post("/posts", checkAuth, postCreateValidation, handleValidationErrors, PostController.create)
 app.delete("/posts/:id", checkAuth, PostController.remove)
 app.patch("/posts/:id",checkAuth, postCreateValidation, handleValidationErrors, PostController.update)
-
-
-// app.listen("https://blog-t61f.onrender.com", (err) => {
-//   if (err) {
-//     return console.log(err);
-//   }
-//   console.log('Server Ok');
-// });
