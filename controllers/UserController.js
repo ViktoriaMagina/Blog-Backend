@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt';
 
 import UserModel from '../models/User.js';
 export const register = async (req, res) => {
-
     try {
       const password = req.body.password;
       const salt = await bcrypt.genSalt(10);
@@ -76,13 +75,18 @@ export const login = async (req, res)=> {
 export const getMe = async (req,res) => {
     try {
       const user = await UserModel.findById(req.userId)
-      if(!user){
-        return res.status(404).json({
-          message: "Пользователь не найден"
-        })
+      if(user){
+        const {passwordHash, ...userData} = user._doc
+        res.json(userData);
+        
+        // return res.status(404).json({
+        //   message: "Пользователь не найден"
+        // })
       }
-      const {passwordHash, ...userData} = user._doc
-      res.json(userData);
+      else{
+        res.json(null);
+      }
+
     } catch (error) {
       console.log(error);
       res.status(500).json({
