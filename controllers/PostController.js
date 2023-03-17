@@ -1,35 +1,33 @@
 import PostModel from '../models/Post.js';
-export const sortPopular = async (req, res) => {
-  try {
-    const posts =  await PostModel.find().sort({ "viewsCount" : "desc"}).populate('user').exec();
-    res.json(posts);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'Не удалось отсортировать',
-    });
-  }
-  
-}
-export const sortNews = async (req, res) => {
-  try {
-    const posts =  await PostModel.find().sort({ "createdAt" : "desc"}).populate('user').exec();
-    res.json(posts);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: 'Не удалось отсортировать',
-    });
-  }
-  
-}
 
+export const sortPopular = async (_, res) => {
+  try {
+    const posts = await PostModel.find().sort({ viewsCount: 'desc' }).populate('user').exec();
+    res.json(posts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'Не удалось отсортировать',
+    });
+  }
+};
+export const sortNews = async (_, res) => {
+  try {
+    const posts = await PostModel.find().sort({ createdAt: 'desc' }).populate('user').exec();
+    res.json(posts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'Не удалось отсортировать',
+    });
+  }
+};
 export const create = async (req, res) => {
   try {
     const doc = new PostModel({
       title: req.body.title,
       text: req.body.text,
-      tags: req.body.tags? req.body.tags.split(',') : [],
+      tags: req.body.tags ? req.body.tags.replace(/\s/g, "").split(','): [],
       user: req.userId,
     });
     const post = await doc.save();
@@ -42,9 +40,9 @@ export const create = async (req, res) => {
     });
   }
 };
-export const getAll = async (req, res) => {
+export const getAll = async (_, res) => {
   try {
-    const posts = await PostModel.find().sort({ "createdAt" : "desc"}).populate('user').exec();
+    const posts = await PostModel.find().sort({ createdAt: 'desc' }).populate('user').exec();
     res.json(posts);
   } catch (error) {
     console.log(error);
@@ -66,18 +64,20 @@ export const getOne = async (req, res) => {
       {
         returnDocument: 'after',
       },
-      
-    ).populate("user").then((doc) => {
+    )
+      .populate('user')
+      .then((doc) => {
         if (!doc) {
           return res.status(404).json({
             message: 'Пост не найден',
           });
         }
         res.json(doc);
-      }).catch((error)=> {
+      })
+      .catch((error) => {
         console.log(error);
         return res.status(404).json({
-            message: 'Пост не найден',
+          message: 'Пост не найден',
         });
       });
   } catch (error) {
@@ -88,60 +88,69 @@ export const getOne = async (req, res) => {
   }
 };
 export const remove = async (req, res) => {
-    try {
-        const postId = req.params.id;
-        await PostModel.findByIdAndRemove({
-            _id: postId
-        }).then((doc)=> {
-            
-            if(!doc){
-                return res.status(404).json({
-                    message: 'Пост не найден',
-                  });
-            }
-            res.json({
-                succes: true
-            })
-        }).catch((error)=> {
-            console.log(error);
-            res.status(500).json({
-              message: 'Не удалось удалить пост',
-            });
-        })
-    } catch (error) {
+  try {
+    const postId = req.params.id;
+    await PostModel.findByIdAndRemove({
+      _id: postId,
+    })
+      .then((doc) => {
+        if (!doc) {
+          return res.status(404).json({
+            message: 'Пост не найден',
+          });
+        }
+        res.json({
+          succes: true,
+        });
+      })
+      .catch((error) => {
         console.log(error);
         res.status(500).json({
           message: 'Не удалось удалить пост',
         });
-    }
-}
-export const update = async (req, res)  => {
-    try {
-        const postId = req.params.id
-        await PostModel.updateOne({
-            _id: postId
-        },{
-            title: req.body.title,
-            text: req.body.text,
-            tags: req.body.tags,
-            user: req.userId,
-        }).then(()=> res.json({succes: true})).catch((error) => {
-            console.log(error);
-            return res.status(500).json({
-              message: 'Не удалось обновить статью',
-            });
-        })
-    } catch (error) {
+      });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'Не удалось удалить пост',
+    });
+  }
+};
+export const update = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    await PostModel.updateOne(
+      {
+        _id: postId,
+      },
+      {
+        title: req.body.title,
+        text: req.body.text,
+        tags: req.body.tags ? req.body.tags.replace(/\s/g, "").split(',') : [],
+        user: req.userId,
+      },
+    )
+      .then(() => res.json({ succes: true }))
+      .catch((error) => {
         console.log(error);
         return res.status(500).json({
           message: 'Не удалось обновить статью',
         });
-    }
-}
-export const getLastTags = async(req, res) => {
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: 'Не удалось обновить статью',
+    });
+  }
+};
+export const getLastTags = async (_, res) => {
   try {
-    const posts = await PostModel.find().limit(5)
-    const tags = posts.map(post => post.tags).flat().slice(0, 5)
+    const posts = await PostModel.find().limit(5);
+    const tags = posts
+      .map((post) => post.tags)
+      .flat()
+      .slice(0, 5);
     res.json(posts);
   } catch (error) {
     console.log(error);
@@ -149,4 +158,4 @@ export const getLastTags = async(req, res) => {
       message: 'Не удалось получить теги',
     });
   }
-}
+};

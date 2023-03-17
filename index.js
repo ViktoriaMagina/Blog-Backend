@@ -2,13 +2,14 @@ import express from 'express';
 import multer from 'multer';
 import cors from "cors"
 import mongoose from 'mongoose';
-import { registerValidation, loginValidation,postCreateValidation } from './validations.js';
+import { registerValidation, loginValidation,postCreateValidation } from './utils/validations.js';
 
 
 
 import checkAuth from './utils/checkAuth.js';
 import * as UserController from './controllers/UserController.js';
 import * as PostController from './controllers/PostController.js';
+import * as ComentController from './controllers/ComentController.js';
 import handleValidationErrors from './utils/handleValidationErrors.js';
 
 mongoose
@@ -33,8 +34,10 @@ app.use(express.json());
 app.use(cors())
 app.use("/uploads", express.static("uploads"))
 
+app.post('/new-comment/:id', checkAuth, handleValidationErrors, ComentController.create);
+
 app.post('/auth/login',  loginValidation, handleValidationErrors, UserController.login);
-app.post('/auth/me', UserController.getMe);
+app.post('/auth/me', checkAuth, UserController.getMe);
 app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register);
 
 app.post("/upload", checkAuth, upload.single("image"), (req, res)=> {

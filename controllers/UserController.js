@@ -73,24 +73,12 @@ export const login = async (req, res)=> {
     }
 }
 export const getMe = async (req,res) => {
-    try {
-      const user = await UserModel.findById(req.userId)
-      if(user){
-        const {passwordHash, ...userData} = user._doc
-        res.json(userData);
-        
-        // return res.status(404).json({
-        //   message: "Пользователь не найден"
-        // })
-      }
-      else{
-        res.json(null);
-      }
-
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({
-        message: 'Не удалось получить информацию ',
-      });
-    }
+  const user = await UserModel.findById(req.userId)
+  if(user){
+    const {passwordHash, ...userData} = user._doc
+    res.json(userData);
   }
+  else{
+    res.json(null);
+  }
+}
